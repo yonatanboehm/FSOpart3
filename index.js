@@ -4,6 +4,7 @@ const app = express()
 var morgan = require('morgan')
 
 app.use(express.json())
+app.use(express.static('dist'))
 
 app.use(morgan(function (tokens, req, res) {
     return [
