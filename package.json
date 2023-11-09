@@ -7,7 +7,10 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "test": "echo \\\"Error: no test specified\\\" && exit 1",
-    "build:ui": "rm -rf dist && cd ../fullstackopen/part2/phonebook2.6/ && npm run build && cp -r dist ../../../FSOpart3/"
+    "build:ui": "rm -rf dist && cd ../fullstackopen/part2/phonebook2.6/ && npm run build && cp -r dist ../../../FSOpart3/",
+    "deploy": "fly deploy",
+    "deploy:full": "npm run build:ui && npm run deploy",    
+    "logs:prod": "fly logs"
   },
   "repository": {
     "type": "git",

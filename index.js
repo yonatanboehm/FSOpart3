@@ -4,10 +4,10 @@ const app = express()
 const cors = require('cors')
 
 app.use(cors())
+app.use(express.static('dist'))
+app.use(express.json())
 
 var morgan = require('morgan')
-
-app.use(express.json())
 
 app.use(morgan(function (tokens, req, res) {
     return [
@@ -75,6 +75,28 @@ app.delete('/api/persons/:id', (request, response) => {
     persons = persons.filter(note => note.id !== id)
   
     response.status(204).end()
+})
+
+app.put('/api/persons/:id', (request, response) => {
+  const id = Number(request.params.id)
+  const name = request.body.name
+  const number = request.body.number
+
+  if (!name || !number) {
+    return response.status(400).json({ 
+      error: 'name or number missing' 
+    })
+  }
+
+  const person = {
+    name,
+    number,
+    id
+  }
+
+  persons = persons.filter(note => note.id !== id).concat(person)
+
+  response.json(person)
 })
 
 const generateId = () => Math.floor(Math.random() * 1000)
