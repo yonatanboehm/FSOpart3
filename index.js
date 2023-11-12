@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require('express')
 const app = express()
 
@@ -6,6 +7,8 @@ const cors = require('cors')
 app.use(cors())
 app.use(express.static('dist'))
 app.use(express.json())
+
+const Person = require('./models/person')
 
 var morgan = require('morgan')
 
@@ -48,7 +51,9 @@ app.get('/', (request, response) => {
 })
   
 app.get('/api/persons', (request, response) => {
-    response.json(persons)
+    Person.find({}).then(result => {
+      response.json(result)
+    })
 })
 
 app.get('/info', (request, response) => {
@@ -60,14 +65,9 @@ app.get('/info', (request, response) => {
 })
 
 app.get('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
-    const person = persons.find(person => person.id === id)
-    
-    if (person) {
-      response.json(person)
-    } else {
-      response.status(404).end()
-    }
+  Person.findById(request.params.id).then(person => {
+    response.json(person)
+  })
 })
 
 app.delete('/api/persons/:id', (request, response) => {
@@ -98,34 +98,23 @@ app.put('/api/persons/:id', (request, response) => {
 
   response.json(person)
 })
-
-const generateId = () => Math.floor(Math.random() * 1000)
   
 app.post('/api/persons', (request, response) => {
-    const name = request.body.name
-    const number = request.body.number
+  const name = request.body.name
+  const number = request.body.number
 
-    if (!name || !number) {
-        return response.status(400).json({ 
-          error: 'name or number missing' 
-        })
-    }
+  if (name === undefined || number === undefined) {
+    return response.status(400).json({ error: 'name or number missing' })
+  }
 
-    if (persons.map(person => person.name).includes(name)) {
-        return response.status(400).json({ 
-            error: 'name must be unique' 
-        })
-    }
+  const person = new Person({
+    name,
+    number,
+  })
 
-    const person = {
-        name,
-        number,
-        id: generateId(),
-    }
-
-    persons = persons.concat(person)
-
-    response.json(person)
+  person.save().then(savedPerson => {
+    response.json(savedPerson)
+  })
 })
 
 const unknownEndpoint = (request, response) => {
