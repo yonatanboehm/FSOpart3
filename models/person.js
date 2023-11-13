@@ -15,6 +15,16 @@ mongoose.connect(url)
     console.log('error connecting to MongoDB:', error.message)
   })
 
+const numValidate = (phoneNumber) => {
+    if (phoneNumber[2] !== '-'){
+      return (phoneNumber.slice(0, 2) + phoneNumber.slice(3)).matches("[0-9]+")
+    }
+    if (phoneNumber[3] !== '-'){
+      return (phoneNumber.slice(0, 3) + phoneNumber.slice()).matches("[0-9]+")
+    }
+
+}
+
 const personSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -23,6 +33,22 @@ const personSchema = new mongoose.Schema({
   },
   number: {
     type: String,
+    minLength: 8,
+    validate: {
+      validator: function(v) {
+        let phoneNum
+        if (v[2] === '-'){
+          phoneNum = v.slice(0, 2) + v.slice(3)
+          return /^\d+$/.test(phoneNum)
+        }
+        if (v[3] === '-'){
+          phoneNum = v.slice(0, 3) + v.slice(4)
+          return /^\d+$/.test(phoneNum)
+        }
+        return /(-)$/.test(v)
+      },
+      message: props => `${props.value} is not a valid phone number!`
+    },
     required: true
   }
 })
