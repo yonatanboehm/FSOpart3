@@ -8,22 +8,12 @@ console.log('connecting to', url)
 
 mongoose.connect(url)
 
-  .then(result => {
+  .then(() => {
     console.log('connected to MongoDB')
   })
   .catch((error) => {
     console.log('error connecting to MongoDB:', error.message)
   })
-
-const numValidate = (phoneNumber) => {
-    if (phoneNumber[2] !== '-'){
-      return (phoneNumber.slice(0, 2) + phoneNumber.slice(3)).matches("[0-9]+")
-    }
-    if (phoneNumber[3] !== '-'){
-      return (phoneNumber.slice(0, 3) + phoneNumber.slice()).matches("[0-9]+")
-    }
-
-}
 
 const personSchema = new mongoose.Schema({
   name: {
